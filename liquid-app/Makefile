@@ -1,7 +1,7 @@
 
 REPO_NAME ?= liquidapp
-DEV_PRO := liquidapp_dev
-REL_PRO := liquidapp_rel
+DEV_PRO := liquidev
+REL_PRO := liquidrel
 DEV_FILE := docker/dev/docker-compose.yml
 REL_FILE := docker/release/docker-compose.yml
 
@@ -24,11 +24,15 @@ release:
 	@ echo "Building images..."
 	@ docker-compose -p $(REL_PRO) -f $(REL_FILE) build web
 	@ echo "Ensuring database is ready..."
-	@ docker-compose -p $(REL_PRO) -f $(REL_FILE) run --rm agent
+	@ docker-compose -p $(REL_PRO) -f $(REL_FILE) run --rm agent-db
 	@ echo "Starting release env services"
 	@ docker-compose -p $(REL_PRO) -f $(REL_FILE) up -d lb
+	@ echo "Ensuring HAproxy is ready..."
+	@ docker-compose -p $(REL_PRO) -f $(REL_FILE) run --rm agent-db
 	@ echo "Scaling web services"
 	@ docker-compose -p $(REL_PRO) -f $(REL_FILE) scale web=3
+	@ echo "Running tests..."
+	@ docker-compose -p $(REL_PRO) -f $(REL_FILE) run --rm test
 
 
 clean:

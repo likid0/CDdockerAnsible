@@ -8,6 +8,7 @@ if [ $(/usr/bin/php /var/www/html/index.php | grep IP | wc -l ) -gt 0 ] ; then
    echo "PHP app Test Passed OK"
 else
    echo "PHP app Test Failed" 
+   exit 1
 fi
 ;;
 *)
